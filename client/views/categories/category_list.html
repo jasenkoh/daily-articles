@@ -1,0 +1,13 @@
+<template name="categoryList">
+	<div class="categories">
+		<ul class="list-group">
+
+		{{ _id }}
+		{{ #each categories }}
+			<li class="list-group-item">
+				<input class="category-item" type="checkbox" checked={{this.active}}> {{ this.name }}
+			</li>
+		{{ /each }}		
+		</ul>
+	</div>
+</template>
