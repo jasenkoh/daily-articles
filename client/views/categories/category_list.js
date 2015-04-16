@@ -1,6 +1,19 @@
 Template.categoryList.helpers({
 	categories: function () {
-		return Meteor.user().profile.categories;
+		var categories = Categories.find({}).fetch();
+		var userCategories = Meteor.user().profile.categories;
+
+		_.each(categories, function(category) {
+			_.each(userCategories, function(userCategory) {
+				if (category._id === userCategory) {
+				    _.extend(category, {
+				        active: true	
+				    });
+				};
+			});
+		});
+
+		return categories;
 	}
 });
 
@@ -11,9 +24,9 @@ Template.categoryList.events({
 			active: this.active,
 			id: this._id
 		}
-
 		Meteor.call('updateCategory', categoryAttributes, function (error, result) {
 			if (error) {
+				alert('error');
 				console.log(error);
 			}
 		});
