@@ -1,7 +1,18 @@
 <template name="articleList">
-	{{ #if currentUser}}
-		{{ >categoryList }}
-	{{ /if}}
-	
-	<h1>Articles</h1>
+  {{ #if currentUser}}
+    {{ >categoryList }}
+  {{ /if}}
+    
+  <h1>Articles</h1>
+  <ul class="list-group">
+    {{ #each articles }}
+      <li class="list-group-item">
+        <span class="badge">{{ this.category.name }}</span>
+        {{ this.title }}
+        <p>
+          <a href="{{ this.url }}" target='_blank'>Check it out</a>
+        </p>
+      </li>
+    {{ /each }}
+  </ul>
 </template>

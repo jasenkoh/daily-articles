@@ -1,18 +1,18 @@
 <template name="categoryList">
-	<div class="categories">
-		<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCategories" aria-expanded="false" aria-controls="collapseCategories">
-		  Manage Categories
-		</button>
-		<div class="collapse" id="collapseCategories">
-		  <div class="well">
-			<ul class="list-group">
-			{{ #each categories }}
-				<li class="list-group-item">
-					<input class="category-item" type="checkbox" checked={{this.active}}> {{ this.name }}
-				</li>
-			{{ /each }}		
-			</ul>
-		  </div>
-		</div>
-	</div>
+  <div class="categories">
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseCategories" aria-expanded="false" aria-controls="collapseCategories">
+      Manage Categories
+    </button>
+    <div class="collapse" id="collapseCategories">
+      <div class="well">
+        <ul class="list-group">
+        {{ #each categories }}
+            <li class="list-group-item">
+                <input class="category-item" type="checkbox" checked={{this.active}}> {{ this.name }}
+            </li>
+        {{ /each }}     
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
