@@ -1,7 +1,7 @@
 Template.categoryList.helpers({
   categories: function () {
     var categories = Categories.find({}).fetch();
-    var userCategories = Meteor.user().profile.categories;
+    var userCategories = Meteor.user().categories;
 
     _.each(categories, function(category) {
       _.each(userCategories, function(userCategory) {
@@ -24,6 +24,7 @@ Template.categoryList.events({
       active: this.active,
       id: this._id
     }
+    
     Meteor.call('updateCategory', categoryAttributes, function (error, result) {
       if (error) {
         alert('error');

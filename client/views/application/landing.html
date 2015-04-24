@@ -1,0 +1,9 @@
+<template name="appLanding">
+  {{ #if currentUser}}
+    {{> articleList}}
+  {{ else }}
+    <div class="alert alert-success" role="alert">
+      <strong>Welcome!</strong> Please log in to fetch some articles.
+    </div>
+  {{ /if }}	
+</template>
