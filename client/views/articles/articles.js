@@ -1,12 +1,6 @@
 Template.articleList.helpers({
   articles: function () {
-  	var ids = _.chain(Meteor.user().articles)
-  	.filter(function(article) 
-  	{ 
-  		return !article.seen; 
-  	})
-  	.pluck('_id')
-  	.value();
+  	var ids = _.chain(Meteor.user().articles).filter(function(article){ return !article.seen; }).pluck('_id').value();
   	
     return Articles.find({_id: {$in: ids }}).fetch();
   },
@@ -17,12 +11,10 @@ Template.articleList.helpers({
 
 Template.articleList.events({
 	'click .visit-article': function(e) {
-		console.log(this.url);
+		var url = this.url;
 		Meteor.call('seeArticle',this._id, function(err, res){
 			if (err) {
 				alert('damn it :/');
-			} else {
-				console.log(this.url);
 			}
 		});
 	}

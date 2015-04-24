@@ -32,7 +32,7 @@ Template.categoryList.events({
       }
     });
 
-    Meteor.call('fetchArticles', this, function(error, result) {
+    Meteor.call('updateUserArticles', this, function(error, result) {
       console.log(result);
     });
   }

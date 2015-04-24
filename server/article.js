@@ -1,13 +1,10 @@
 Meteor.methods({
   bootstrapArticles: function(user) {
-    var userCategories = user.categories;
-    var categories = Categories.find({_id: {$in: userCategories }}).fetch();
+    var categories = Categories.find({_id: {$in: user.categories }}).fetch();
 
-    var date = new Date();
-    date.setHours(0,0,0,0);
 
       var newArticles = [];
-      
+
     _.each(categories, function(category) {
       var articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name }).fetch();
 
@@ -20,8 +17,24 @@ Meteor.methods({
         _.each(articles, function(article) { newArticles.push({_id: article._id, seen: false}); });
       }
 
-      Meteor.users.update({_id: Meteor.user()._id}, {$set: { 'articles': newArticles }});
     });
+
+    Meteor.users.update({_id: this.userId}, {$set: { 'articles': newArticles }});
+  },
+
+  updateUserArticles: function() {
+    var categories = Categories.find({_id: {$in: Meteor.user().categories }}).fetch();
+    var newArticles = []
+    var date = new Date();
+    date.setHours(0,0,0,0);
+    
+    _.each(categories, function(category) {
+      var articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name }).fetch();
+
+      _.each(articles, function(article) { newArticles.push({_id: article._id, seen: false}); });
+    });
+
+    Meteor.users.update({_id: this.userId}, {$set: { 'articles': newArticles }});
   }
 });
 
