@@ -1,8 +1,9 @@
-<template name="articleList">  
+<template name="articleList">
   {{ #if articlesReady }}  
     {{ >categoryList }}
 
     <h1>Articles</h1>
+    <button type="button" class="btn btn-success update-list">Update List</button>
     <ul class='list-group'>
       {{ #each articles }}
         <li class='list-group-item'>

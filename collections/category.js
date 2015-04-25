@@ -1,11 +1,12 @@
 Meteor.methods({
   updateCategory: function (categoryAttributes) {
-    if (!categoryAttributes.active) {
-      Meteor.users.update({ _id: Meteor.user()._id }, 
-        { $pull: {"categories": categoryAttributes.id}});
-    } else {
-      Meteor.users.update({ _id: Meteor.user()._id }, 
-        { $push: {"categories": categoryAttributes.id}});
-    }
+  	operator = categoryAttributes.active ? '$addToSet' : '$pull';
+  	categoryOperation = {};
+  	
+  	categoryOperation[operator] = {
+  		categories: categoryAttributes.id
+  	};
+
+  	Meteor.users.update({_id: Meteor.user()._id}, categoryOperation);
   }
 });
