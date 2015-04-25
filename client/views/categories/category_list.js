@@ -19,6 +19,8 @@ Template.categoryList.helpers({
 
 Template.categoryList.events({
   'click .category-item': function (e) {
+    Session.set('loading', true);
+
     this.active = !this.active;
     var categoryAttributes = {
       active: this.active,
@@ -32,8 +34,13 @@ Template.categoryList.events({
       }
     });
 
-    Meteor.call('updateUserArticles', this, function(error, result) {
-      console.log(result);
+    Meteor.call('updateUserArticles', this, function(err, res) {
+      if (err) {
+        alert('error');
+        console.log(err);
+      } else{
+        Session.set('loading', false);
+      };
     });
   }
 });

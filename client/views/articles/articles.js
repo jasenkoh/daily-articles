@@ -3,9 +3,6 @@ Template.articleList.helpers({
     var ids = _.chain(Meteor.user().articles).filter(function(article){ return !article.seen; }).pluck('_id').value();
     
     return Articles.find({_id: {$in: ids }}).fetch();
-  },
-  articlesReady: function() {
-    return Articles.find().count() > 0;
   }
 });
 
@@ -19,12 +16,13 @@ Template.articleList.events({
     });
   },
   'click .update-list': function(e) {
-    Meteor.call('bootstrapArticles',function(err, resp) {
+    Session.set('loading', true);
+    Meteor.call('updateUserArticles',function(err, resp) {
       if (err) {
         alert('Error');
         console.log(err)
       } else{
-        console.log(resp);
+        Session.set('loading', false);
       };
     })
   }
