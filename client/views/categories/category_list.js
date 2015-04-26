@@ -38,6 +38,7 @@ Template.categoryList.events({
       if (err) {
         alert('error');
         console.log(err);
+        Session.set('loading', false);
       } else{
         Session.set('loading', false);
       };

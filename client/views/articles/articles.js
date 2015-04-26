@@ -2,7 +2,7 @@ Template.articleList.helpers({
   articles: function () {
     var ids = _.chain(Meteor.user().articles).filter(function(article){ return !article.seen; }).pluck('_id').value();
     
-    return Articles.find({_id: {$in: ids }}).fetch();
+    return Articles.find({_id: {$in: ids }}, {sort: { createdAt: -1 }}).fetch();
   }
 });
 
@@ -17,11 +17,11 @@ Template.articleList.events({
   },
   'click .update-list': function(e) {
     Session.set('loading', true);
-    Meteor.call('updateUserArticles',function(err, resp) {
+    Meteor.call('getFreshArticles',function(err, resp) {
       if (err) {
         alert('Error');
         console.log(err)
-      } else{
+      } else {
         Session.set('loading', false);
       };
     })

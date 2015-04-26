@@ -9,11 +9,14 @@
     <ul class='list-group'>
       {{ #each articles }}
         <li class='list-group-item'>
-          <span class="badge">{{ this.category.name }}</span>
+          <span class="badge">{{ this.category.name }}: {{ this.score }}</span>
           {{ this.title }}
           <p>
             <a href='{{ this.url }}' target='_blank' class='visit-article'>
               Check it out
+            </a> | 
+            <a href='#' class='visit-article'>
+              Dismiss
             </a>
           </p>
         </li>
