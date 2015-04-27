@@ -46,19 +46,18 @@ var saveFreshArticles = function(articles, category) {
   var existingArticle = Articles.findOne({referral_id: article.data.id});
 
   if (!existingArticle && article.data.ups > 0) {
+    url = article.data.url.split(' ')
       Articles.insert({
         title: article.data.title,
         source: 'Reddit',
-        url: article.data.url,
+        url: url[0],
         score: article.data.ups,
         createdAt: new Date().getTime(),
         category: category,
         referral_id: article.data.id
       }, function(error, result) {
         if (error) {
-          throw new Meteor.Error(500, 'There was an error processing request: ' + error.message);
-        } else {
-          console.log(result);
+          throw new Meteor.Error(500, 'There was an error processing request: ' + error);
         };
       });
     }

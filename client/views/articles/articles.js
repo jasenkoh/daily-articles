@@ -21,6 +21,7 @@ Template.articleList.events({
       if (err) {
         alert('Error');
         console.log(err)
+        Session.set('loading', false);
       } else {
         Session.set('loading', false);
       };
