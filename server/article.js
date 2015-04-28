@@ -1,10 +1,4 @@
 Meteor.methods({
-  updateUserArticles: function() {
-    var userArticles = getArticlesByUserCategories();
-    Meteor.users.update({_id: this.userId}, { $set: { 'articles': userArticles }});
-
-    return userArticles;
-  },
   getFreshArticles: function() {
     var result, categories;
     articles = [];
@@ -63,19 +57,4 @@ var saveFreshArticles = function(articles, category) {
       Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});
     }
   });
-}
-
-var getArticlesByUserCategories = function() {
-  var categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
-  var availableArticles = [];
-  var date = new Date();
-  date.setHours(0,0,0,0);
-
-  _.each(categories, function(category) {
-    var articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name }).fetch();
-
-    _.each(articles, function(article) { availableArticles.push({_id: article._id, seen: false}); });
-  });
-
-  return availableArticles;
 }

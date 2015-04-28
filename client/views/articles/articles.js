@@ -34,4 +34,17 @@ Template.articleList.events({
 
 Template.articleList.onRendered(function() {
   $('.panel-collapse').first().addClass('in');
+
+  if (Meteor.userId() && Articles.find().count() === 0) {
+    Session.set('loading', true);
+    Meteor.call('getFreshArticles', function (error, result) {
+      if (error) {
+        alert('error');
+        console.log(error);
+        Session.set('loading', false);
+      } else {
+        Session.set('loading', false);
+      }
+    });
+  }
 });
