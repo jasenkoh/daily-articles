@@ -18,13 +18,10 @@ Meteor.methods({
       saveFreshArticles(result, category);
     });
 
-    Meteor.call('updateUserArticles', function(err, result) {
-      if (err) {
-        throw new Meteor.error(500, err);
-      } else {
-        return result;
-      };
-    })
+    return true;
+  },
+  seeArticle: function(articleId) {
+    Meteor.users.update({_id: this.userId, "articles._id": articleId}, {$set: {'articles.$.seen': true}});
   }
 });
 
@@ -45,7 +42,7 @@ var saveFreshArticles = function(articles, category) {
   _.each(articles, function(article) {
   var existingArticle = Articles.findOne({referral_id: article.data.id});
 
-  if (!existingArticle && article.data.ups > 0) {
+  if (!existingArticle) {
     url = article.data.url.split(' ')
       Articles.insert({
         title: article.data.title,
@@ -58,8 +55,12 @@ var saveFreshArticles = function(articles, category) {
       }, function(error, result) {
         if (error) {
           throw new Meteor.Error(500, 'There was an error processing request: ' + error);
+        } else {
+          Meteor.users.update({ _id: Meteor.userId() }, {$push: {'articles': {'_id': result, 'seen': false}}});
         };
       });
+    } else {
+      Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});
     }
   });
 }

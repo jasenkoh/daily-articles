@@ -17,9 +17,3 @@ Accounts.onCreateUser(function(options, user) {
 
   return user;
 });
-
-Meteor.methods({
-  seeArticle: function(articleId) {
-    Meteor.users.update({_id: this.userId, "articles._id": articleId}, {$set: {'articles.$.seen': true}});
-  }
-});

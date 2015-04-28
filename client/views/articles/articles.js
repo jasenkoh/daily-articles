@@ -2,7 +2,10 @@ Template.articleList.helpers({
   articles: function () {
     var ids = _.chain(Meteor.user().articles).filter(function(article){ return !article.seen; }).pluck('_id').value();
     
-    return Articles.find({_id: {$in: ids }}, {sort: { createdAt: -1 }}).fetch();
+    return Articles.find({_id: {$in: ids }}, {sort: { score: -1 }}).fetch();
+  },
+  categories: function() {
+    return Categories.find({_id: {$in: Meteor.user().categories }}).fetch();
   }
 });
 
@@ -25,6 +28,10 @@ Template.articleList.events({
       } else {
         Session.set('loading', false);
       };
-    })
+    });
   }
+});
+
+Template.articleList.onRendered(function() {
+  $('.panel-collapse').first().addClass('in');
 });
