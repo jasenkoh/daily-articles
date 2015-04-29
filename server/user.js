@@ -8,12 +8,7 @@ Accounts.onCreateUser(function(options, user) {
   } else {
     user.profile = options.profile;    
   }
-
-  var categories = [];
-
-  _.each(Categories.find({}).fetch(), function(category) { categories.push(category._id); });
-
-  user.categories = categories.slice(0, 3);
+  
   user.articles = [];
 
   return user;

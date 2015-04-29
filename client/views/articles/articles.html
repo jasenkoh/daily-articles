@@ -1,6 +1,4 @@
-<template name="articleList">
-  {{ >categoryList }}
-  
+<template name="articleList">  
   {{ #if loading }}
     {{ >appLoading }}  
   {{ else }}
@@ -13,7 +11,7 @@
           <div class="panel-heading" role="tab" id="panel-{{_id}}">
             <h4 class="panel-title">
               <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{_id}}" aria-expanded="true" aria-controls="collapse-{{_id}}">
-                {{ name }}
+                {{ name }} | {{countItems this.name}}
               </a>
             </h4>
           </div>

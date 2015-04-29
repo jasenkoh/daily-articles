@@ -15,7 +15,7 @@ Meteor.methods({
     if (categoryName) {
       addUserArticle(categoryName);
     } else {
-      categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
+      categories = Categories.find({ userId: Meteor.userId(), active: true }).fetch();
       _.each(categories, function(cat) {
         addUserArticle(cat.name);
       });
@@ -26,9 +26,9 @@ Meteor.methods({
 });
 
 var getArticlesForUserCategories = function() {
-  var result, categories, articles;
-  articles = [];
-  categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
+  var result, categories;
+
+  categories = Categories.find({ userId: Meteor.userId(), active: true }).fetch();
 
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
@@ -57,7 +57,7 @@ var addUserArticle = function(categoryName) {
       Meteor.users.update({ _id: Meteor.userId() },
       {
         $push: {
-          articles: {_id: article._id, seen: false}
+          articles: {_id: article._id, seen: false, categoryName: categoryName}
         }
       });
     }

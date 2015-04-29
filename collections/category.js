@@ -1,13 +1,12 @@
 Meteor.methods({
   updateUserCategory: function (categoryAttributes) {
-    operator = categoryAttributes.active ? '$addToSet' : '$pull';
     categoryOperation = {};
     
-    categoryOperation[operator] = {
-      categories: categoryAttributes.id
+    categoryOperation['$set'] = {
+      active: categoryAttributes.active
     };
 
-    Meteor.users.update({_id: Meteor.user()._id}, categoryOperation);
+    Categories.update({ _id: categoryAttributes.id }, categoryOperation);
   },
   addCategory: function(categoryAttributes) {
     return Categories.insert(categoryAttributes);

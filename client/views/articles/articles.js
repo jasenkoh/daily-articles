@@ -8,7 +8,7 @@ Template.articleList.helpers({
     return Articles.find({_id: {$in: ids }}, {sort: { score: -1 }}).fetch();
   },
   categories: function() {
-    return Categories.find({_id: {$in: Meteor.user().categories }}).fetch();
+    return Categories.find({ active: true }).fetch();
   }
 });
 
@@ -53,4 +53,18 @@ var getArticles = function() {
       });
     }
   });  
-}
+};
+
+Handlebars.registerHelper('countItems', function(category) {
+  var count = _.where(Meteor.user().articles, { categoryName: category, seen: false }).length;
+  var message;
+  if (count === 0) {
+    message = 'Nothing to read, please update list';
+  } else if(count === 1) {
+    message = count + ' item to read!';
+  } else {
+    message = count + ' items to read!';
+  };
+
+  return message;
+});

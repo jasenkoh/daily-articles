@@ -1,6 +1,13 @@
 <template name="appLanding">
   {{ #if currentUser}}
-    {{> articleList}}
+  	{{ >categoryList }}
+  	{{ #if hasCategories }}
+    	{{> articleList}}
+	{{ else }}
+	    <div class="alert alert-info" role="info">
+	      Let's start by adding a category!
+	    </div>
+  	{{ /if }}
   {{ else }}
     <div class="alert alert-success" role="alert">
       <strong>Welcome!</strong> Please log in to fetch some articles.

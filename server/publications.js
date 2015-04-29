@@ -6,5 +6,5 @@
 });
 
 Meteor.publish('categories', function() {
-  return Categories.find();
+  return Categories.find({userId: this.userId});
 });

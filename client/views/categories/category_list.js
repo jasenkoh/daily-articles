@@ -1,19 +1,6 @@
 Template.categoryList.helpers({
   categories: function () {
-    var categories = Categories.find({}).fetch();
-    var userCategories = Meteor.user().categories;
-
-    _.each(categories, function(category) {
-      _.each(userCategories, function(userCategory) {
-        if (category._id === userCategory) {
-          _.extend(category, {
-              active: true  
-          });
-        };
-      });
-    });
-
-    return categories;
+    return Categories.find({}).fetch();
   }
 });
 
@@ -43,7 +30,9 @@ Template.categoryList.events({
     if (subreddit.slice(0, 2) === 'r/') {
       categoryAttributes = {
         name: subreddit.slice(2),
-        referral_url: 'http://www.reddit.com/r/' + subreddit.slice(2) + '.json?sort=hot&limit=50'
+        referral_url: 'http://www.reddit.com/r/' + subreddit.slice(2) + '.json?sort=hot&limit=50',
+        userId: Meteor.userId(),
+        active: true
       }
 
       Meteor.call('addCategory', categoryAttributes, function(err, res) {
@@ -55,33 +44,21 @@ Template.categoryList.events({
           $('#category-name').val('');
           $('.input-group').removeClass('has-error');
 
-          category = {
-            id: res,
-            active: true
-          };
-
-          Meteor.call('updateUserCategory', category, function(err, res) {
+          Meteor.call('getFreshArticles', Categories.findOne({ _id: categoryAttributes.id }), 
+            function(err, res) {
             if (err) {
-              alert('Error updating user category');
+              alert('Error getting fresh articles');
               console.log(err);
             } else {
-              Meteor.call('getFreshArticles', Categories.findOne({ _id: categoryAttributes.id }), 
-                function(err, res) {
+              Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
                 if (err) {
-                  alert('Error getting fresh articles');
-                  console.log(err);
+                  alert('Error');
+                  console.log(err)
+                  Session.set('loading', false);
                 } else {
-                  Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
-                    if (err) {
-                      alert('Error');
-                      console.log(err)
-                      Session.set('loading', false);
-                    } else {
-                      Session.set('loading', false);
-                    }
-                  });                  
+                  Session.set('loading', false);
                 }
-              });
+              });                  
             }
           });
         }
