@@ -27,7 +27,7 @@ Template.categoryList.events({
       id: this._id
     }
     
-    Meteor.call('updateCategory', categoryAttributes, function (error, result) {
+    Meteor.call('updateUserCategory', categoryAttributes, function (error, result) {
       if (error) {
         alert('error');
         console.log(error);
@@ -51,20 +51,40 @@ Template.categoryList.events({
           alert('error adding category');
           console.log(err);
           Session.set('loading', false);
-        } else{
+        } else {
           $('#category-name').val('');
           $('.input-group').removeClass('has-error');
-          
-          Meteor.call('getFreshArticles',function(err, resp) {
+
+          category = {
+            id: res,
+            active: true
+          };
+
+          Meteor.call('updateUserCategory', category, function(err, res) {
             if (err) {
-              alert('Error');
-              console.log(err)
-              Session.set('loading', false);
+              alert('Error updating user category');
+              console.log(err);
             } else {
-              Session.set('loading', false);
-            };
+              Meteor.call('getFreshArticles', Categories.findOne({ _id: categoryAttributes.id }), 
+                function(err, res) {
+                if (err) {
+                  alert('Error getting fresh articles');
+                  console.log(err);
+                } else {
+                  Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
+                    if (err) {
+                      alert('Error');
+                      console.log(err)
+                      Session.set('loading', false);
+                    } else {
+                      Session.set('loading', false);
+                    }
+                  });                  
+                }
+              });
+            }
           });
-        };
+        }
       });
     } else {
       $('.input-group').addClass('has-error');

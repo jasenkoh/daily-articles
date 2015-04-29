@@ -1,23 +1,68 @@
 Meteor.methods({
-  getFreshArticles: function() {
-    var result, categories;
-    articles = [];
-    categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
-
-    fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
-    
-    _.each(categories, function(category) {
-      result = fetchArticlesSync(category);
-
-      saveFreshArticles(result, category);
-    });
+  getFreshArticles: function(category) {
+    if (category) {
+      getArticleForCategory(category);
+    } else {
+      getArticlesForUserCategories()
+    }
 
     return true;
   },
   seeArticle: function(articleId) {
     Meteor.users.update({_id: this.userId, "articles._id": articleId}, {$set: {'articles.$.seen': true}});
+  },
+  feedUserWithArticles: function(categoryName) {
+    if (categoryName) {
+      addUserArticle(categoryName);
+    } else {
+      categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
+      _.each(categories, function(cat) {
+        addUserArticle(cat.name);
+      });
+    }
+
+    return true;
   }
 });
+
+var getArticlesForUserCategories = function() {
+  var result, categories, articles;
+  articles = [];
+  categories = Categories.find({_id: { $in: Meteor.user().categories }}).fetch();
+
+  fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
+  
+  _.each(categories, function(category) {
+    result = fetchArticlesSync(category);
+
+    saveFreshArticles(result, category);
+  });
+}
+
+var getArticleForCategory = function(category) {
+  fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
+  result = fetchArticlesSync(category);
+
+  saveFreshArticles(result, category);
+}
+
+var addUserArticle = function(categoryName) {
+  var date = new Date();
+  date.setHours(0,0,0,0);
+
+  articles = Articles.find({ createdAt: {$gte: date}, 'category.name': categoryName}).fetch();
+
+  _.each(articles, function(article) {
+    if (_.isEmpty(_.where(Meteor.user().articles, {_id: article._id}))) {
+      Meteor.users.update({ _id: Meteor.userId() },
+      {
+        $push: {
+          articles: {_id: article._id, seen: false}
+        }
+      });
+    }
+  });
+}
 
 var readArticlesFromReddit = function(category, cb) {
   var articleIds, response, articles;
@@ -49,9 +94,7 @@ var saveFreshArticles = function(articles, category) {
       }, function(error, result) {
         if (error) {
           throw new Meteor.Error(500, 'There was an error processing request: ' + error);
-        } else {
-          Meteor.users.update({ _id: Meteor.userId() }, {$push: {'articles': {'_id': result, 'seen': false}}});
-        };
+        }
       });
     } else {
       Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});

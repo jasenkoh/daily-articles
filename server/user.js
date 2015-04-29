@@ -13,7 +13,8 @@ Accounts.onCreateUser(function(options, user) {
 
   _.each(Categories.find({}).fetch(), function(category) { categories.push(category._id); });
 
-  user.categories = categories;
+  user.categories = categories.slice(0, 3);
+  user.articles = [];
 
   return user;
 });
