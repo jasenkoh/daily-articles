@@ -82,7 +82,8 @@ var saveFreshArticles = function(articles, category) {
   var existingArticle = Articles.findOne({referral_id: article.data.id});
 
   if (!existingArticle) {
-    url = article.data.url.split(' ')
+    var url = article.data.url
+    if (url.match(MatchEx.Url())) {
       Articles.insert({
         title: article.data.title,
         source: 'Reddit',
@@ -96,6 +97,7 @@ var saveFreshArticles = function(articles, category) {
           throw new Meteor.Error(500, 'There was an error processing request: ' + error);
         }
       });
+    }
     } else {
       Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});
     }
