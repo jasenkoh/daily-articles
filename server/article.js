@@ -94,7 +94,7 @@ var saveFreshArticles = function(articles, category) {
         referral_id: article.data.id
       }, function(error, result) {
         if (error) {
-          throw new Meteor.Error(500, 'There was an error processing request: ' + error + ' for item: ' existingArticle);
+          throw new Meteor.Error(500, 'There was an error processing request: ' + error + ' for item: ' + existingArticle);
         }
       });
     }
