@@ -87,7 +87,7 @@ var saveFreshArticles = function(articles, category) {
       Articles.insert({
         title: article.data.title,
         source: 'Reddit',
-        url: url[0],
+        url: url,
         score: article.data.ups,
         createdAt: new Date().getTime(),
         category: category,
