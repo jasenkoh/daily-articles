@@ -9,7 +9,7 @@ Meteor.methods({
     return true;
   },
   seeArticle: function(articleId) {
-    Meteor.users.update({_id: this.userId, "articles._id": articleId}, {$set: {'articles.$.seen': true}});
+    Meteor.users.update({ _id: this.userId, 'articles._id': articleId }, {$set: {'articles.$.seen': true}});
   },
   feedUserWithArticles: function(categoryName) {
     if (categoryName) {
@@ -22,6 +22,17 @@ Meteor.methods({
     }
 
     return true;
+  },
+  seeAllArticles: function(category) {
+    _.each(Meteor.user().articles, function(article) {
+      if (article.categoryName === category) {
+        Meteor.call('seeArticle', article._id, function(err, res) {
+          if (err) {
+            throw new Meteor.Error(500, 'There was an error processing request: ' + error);
+          }
+        });
+      }
+    });
   }
 });
 
@@ -33,7 +44,14 @@ var getArticlesForUserCategories = function() {
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
   _.each(categories, function(category) {
+    var start = new Date().getTime();
+
     result = fetchArticlesSync(category);
+
+    var end = new Date().getTime();
+    var time = end - start;
+    console.log('Read articles from reddit time execution: ' + (time / 1000) + 
+      ' seconds for category: ' + category.name);
 
     saveFreshArticles(result, category);
   });

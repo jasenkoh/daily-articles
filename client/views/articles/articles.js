@@ -23,6 +23,14 @@ Template.articleList.events({
   },
   'click .update-list': function(e) {
     getArticles();
+  },
+  'click .dismiss-all': function(e) {
+    e.preventDefault();
+    Meteor.call('seeAllArticles', this.name, function(err, res){
+      if (err) {
+        alert('damn it :/');
+      }
+    });
   }
 });
 
@@ -37,6 +45,7 @@ Template.articleList.onRendered(function() {
 var getArticles = function() {
   Session.set('loading', true);
 
+  var start = new Date().getTime();
   Meteor.call('getFreshArticles', function (error, result) {
     if (error) {
       alert('error');
@@ -48,6 +57,9 @@ var getArticles = function() {
           alert('error feeding user with articles');
           console.log(error);
         } else {
+          var end = new Date().getTime();
+          var time = end - start;
+          console.log('Get articles execution time: ' + (time / 1000) + ' seconds');
           Session.set('loading', false);
         }
       });

@@ -4,7 +4,7 @@ Meteor.methods({
     
     categoryOperation['$set'] = {
       active: categoryAttributes.active
-    };
+    }
 
     Categories.update({ _id: categoryAttributes.id }, categoryOperation);
   },
