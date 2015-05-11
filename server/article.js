@@ -23,7 +23,7 @@ Meteor.methods({
 
     return true;
   },
-  seeAllArticles: function(category) {
+  dismissAllArticles: function(category) {
     _.each(Meteor.user().articles, function(article) {
       if (article.categoryName === category) {
         Meteor.call('seeArticle', article._id, function(err, res) {
@@ -71,7 +71,7 @@ var addUserArticle = function(categoryName) {
   articles = Articles.find({ createdAt: {$gte: date}, 'category.name': categoryName}).fetch();
 
   _.each(articles, function(article) {
-    if (_.isEmpty(_.where(Meteor.user().articles, {_id: article._id}))) {
+    if (_.isEmpty(_.where(Meteor.user().articles, {_id: article._id})) && article.score > 5) {
       Meteor.users.update({ _id: Meteor.userId() },
       {
         $push: {

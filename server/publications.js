@@ -1,8 +1,5 @@
   Meteor.publish('articles', function() {
-    var date = new Date();
-    date.setHours(0,0,0,0);
-  
-  return Articles.find({ createdAt: {$gte: date}});
+  return Articles.find();
 });
 
 Meteor.publish('categories', function() {

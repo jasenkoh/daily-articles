@@ -14,6 +14,7 @@ Template.articleList.helpers({
 
 Template.articleList.events({
   'click .visit-article': function(e) {
+    e.preventDefault();
     var url = this.url;
     Meteor.call('seeArticle',this._id, function(err, res){
       if (err) {
@@ -22,11 +23,12 @@ Template.articleList.events({
     });
   },
   'click .update-list': function(e) {
+    e.preventDefault();
     getArticles();
   },
   'click .dismiss-all': function(e) {
     e.preventDefault();
-    Meteor.call('seeAllArticles', this.name, function(err, res){
+    Meteor.call('dismissAllArticles', this.name, function(err, res){
       if (err) {
         alert('damn it :/');
       }
