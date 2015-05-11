@@ -97,25 +97,25 @@ var readArticlesFromReddit = function(category, cb) {
 
 var saveFreshArticles = function(articles, category) {
   _.each(articles, function(article) {
-  var existingArticle = Articles.findOne({referral_id: article.data.id});
+    var existingArticle = Articles.findOne({referral_id: article.data.id});
 
-  if (!existingArticle) {
-    var url = article.data.url
-    if (url.match(MatchEx.Url())) {
-      Articles.insert({
-        title: article.data.title,
-        source: 'Reddit',
-        url: url,
-        score: article.data.ups,
-        createdAt: new Date().getTime(),
-        category: category,
-        referral_id: article.data.id
-      }, function(error, result) {
-        if (error) {
-          throw new Meteor.Error(500, 'There was an error processing request: ' + error + ' for item: ' + existingArticle);
+    if (!existingArticle) {
+      var url = article.data.url
+      try {
+        if (url.match(MatchEx.Url())) {
+          Articles.insert({
+            title: article.data.title,
+            source: 'Reddit',
+            url: url,
+            score: article.data.ups,
+            createdAt: new Date().getTime(),
+            category: category,
+            referral_id: article.data.id
+          });
         }
-      });
-    }
+      } catch(err) {
+        console.log('There was an error processing request: ' + err);
+      }
     } else {
       Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});
     }
