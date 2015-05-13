@@ -18,3 +18,5 @@ sacha:spin
 raix:handlebar-helpers
 jperl:match-ex
 reywood:iron-router-ga
+chriswessels:glyphicons-halflings
+percolate:synced-cron

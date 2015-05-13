@@ -1,6 +1,6 @@
 Template.categoryList.helpers({
   categories: function () {
-    return Categories.find({}).fetch();
+    return Meteor.user().categories;
   }
 });
 
@@ -11,13 +11,13 @@ Template.categoryList.events({
     this.active = !this.active;
     var categoryAttributes = {
       active: this.active,
-      id: this._id
+      _id: this._id
     }
     
     Meteor.call('updateUserCategory', categoryAttributes, function (error, result) {
       if (error) {
-        alert('error');
-        console.log(error);
+        console.log(err);
+        throw new Meteor.Error( 500, 'There was an error processing your request');
         Session.set('loading', false);
       } else {
         Session.set('loading', false);
@@ -26,6 +26,7 @@ Template.categoryList.events({
   },
   'click .add-category': function(e) {
     Session.set('loading', true);
+
     var subreddit = $('#category-name').val();
     if (subreddit.slice(0, 2) === 'r/') {
       categoryAttributes = {
@@ -44,21 +45,13 @@ Template.categoryList.events({
           $('#category-name').val('');
           $('.input-group').removeClass('has-error');
 
-          Meteor.call('getFreshArticles', Categories.findOne({ _id: categoryAttributes.id }), 
-            function(err, res) {
+          Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
             if (err) {
-              alert('Error getting fresh articles');
               console.log(err);
+              throw new Meteor.Error( 500, 'There was an error processing your request');
+              Session.set('loading', false);
             } else {
-              Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
-                if (err) {
-                  alert('Error');
-                  console.log(err)
-                  Session.set('loading', false);
-                } else {
-                  Session.set('loading', false);
-                }
-              });                  
+             Session.set('loading', false);
             }
           });
         }

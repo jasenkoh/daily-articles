@@ -3,7 +3,7 @@ Meteor.methods({
     if (category) {
       getArticleForCategory(category);
     } else {
-      getArticlesForUserCategories()
+      getArticlesForCategories()
     }
 
     return true;
@@ -11,22 +11,39 @@ Meteor.methods({
   seeArticle: function(articleId) {
     Meteor.users.update({ _id: this.userId, 'articles._id': articleId }, {$set: {'articles.$.seen': true}});
   },
-  feedUserWithArticles: function(categoryName) {
+  dismissArticle: function(articleId) {
+    Meteor.users.update({ _id: this.userId, 'articles._id': articleId }, {$set: {'articles.$.dismissed': true}});
+  },
+  feedUserWithArticles: function(categoryName, user) {
     if (categoryName) {
-      addUserArticle(categoryName);
+      addUserArticle(Categories.findOne({name: categoryName}), user);
     } else {
-      categories = Categories.find({ userId: Meteor.userId(), active: true }).fetch();
-      _.each(categories, function(cat) {
-        addUserArticle(cat.name);
+      categories = _.filter(Meteor.user().categories, function(category) { return category.active; });
+
+      _.each(categories, function(category) {
+        addUserArticle(Categories.findOne({name: category.name}), user);
       });
     }
 
     return true;
   },
+  feedUsersWithArticles: function() {
+    categories = Categories.find().fetch();
+
+    _.each(Meteor.users.find().fetch(), function(user) {
+      _.each(user.categories, function(category) {
+        Meteor.call('feedUserWithArticles', category.name, user, function (error, result) {
+          if (error) {
+            console.log('Error while feeding users with articles: '+ error);
+          }
+        });
+      });
+    });
+  },
   dismissAllArticles: function(category) {
     _.each(Meteor.user().articles, function(article) {
       if (article.categoryName === category) {
-        Meteor.call('seeArticle', article._id, function(err, res) {
+        Meteor.call('dismissArticle', article._id, function(err, res) {
           if (err) {
             throw new Meteor.Error(500, 'There was an error processing request: ' + error);
           }
@@ -36,22 +53,15 @@ Meteor.methods({
   }
 });
 
-var getArticlesForUserCategories = function() {
+var getArticlesForCategories = function() {
   var result, categories;
 
-  categories = Categories.find({ userId: Meteor.userId(), active: true }).fetch();
+  categories = Categories.find().fetch();
 
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
   _.each(categories, function(category) {
-    var start = new Date().getTime();
-
     result = fetchArticlesSync(category);
-
-    var end = new Date().getTime();
-    var time = end - start;
-    console.log('Read articles from reddit time execution: ' + (time / 1000) + 
-      ' seconds for category: ' + category.name);
 
     saveFreshArticles(result, category);
   });
@@ -64,18 +74,19 @@ var getArticleForCategory = function(category) {
   saveFreshArticles(result, category);
 }
 
-var addUserArticle = function(categoryName) {
-  var date = new Date();
-  date.setHours(0,0,0,0);
+var addUserArticle = function(category, user) {
+  var articles, userArticles, userId;
 
-  articles = Articles.find({ createdAt: {$gte: date}, 'category.name': categoryName}).fetch();
+  articles = Articles.find({'category.name': category.name}).fetch();
+  userArticles = user !== undefined ? user.articles : Meteor.user().articles;
+  userId = user !== undefined ? user._id : Meteor.userId();
 
   _.each(articles, function(article) {
-    if (_.isEmpty(_.where(Meteor.user().articles, {_id: article._id})) && article.score > 5) {
-      Meteor.users.update({ _id: Meteor.userId() },
+    if (_.isEmpty(_.where(userArticles, {_id: article._id})) && article.score > 5) {
+      Meteor.users.update({ _id: userId},
       {
         $push: {
-          articles: {_id: article._id, seen: false, categoryName: categoryName}
+          articles: {_id: article._id, seen: false, categoryName: category.name, dismissed: false}
         }
       });
     }
