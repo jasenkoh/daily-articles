@@ -8,8 +8,6 @@ Accounts.onCreateUser(function(options, user) {
   } else {
     user.profile = options.profile;    
   }
-  
-  user.articles = [];
 
   return user;
 });

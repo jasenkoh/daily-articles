@@ -8,12 +8,6 @@ Meteor.methods({
 
     return true;
   },
-  seeArticle: function(articleId) {
-    Meteor.users.update({ _id: this.userId, 'articles._id': articleId }, {$set: {'articles.$.seen': true}});
-  },
-  dismissArticle: function(articleId) {
-    Meteor.users.update({ _id: this.userId, 'articles._id': articleId }, {$set: {'articles.$.dismissed': true}});
-  },
   feedUserWithArticles: function(categoryName, user) {
     if (categoryName) {
       addUserArticle(Categories.findOne({name: categoryName}), user);
@@ -41,13 +35,9 @@ Meteor.methods({
     });
   },
   dismissAllArticles: function(category) {
-    _.each(Meteor.user().articles, function(article) {
-      if (article.categoryName === category) {
-        Meteor.call('dismissArticle', article._id, function(err, res) {
-          if (err) {
-            throw new Meteor.Error(500, 'There was an error processing request: ' + error);
-          }
-        });
+    _.each(UserArticles.find().fetch(), function(userArticle) {
+      if (userArticle.article.categoryName === category) {
+        UserArticles.update({ _id: userArticle._id },  {$set: { dismissed: true}});
       }
     });
   }
@@ -75,19 +65,29 @@ var getArticleForCategory = function(category) {
 }
 
 var addUserArticle = function(category, user) {
-  var articles, userArticles, userId;
+  var articles, userArticles, userId, date;
 
-  articles = Articles.find({'category.name': category.name}).fetch();
-  userArticles = user !== undefined ? user.articles : Meteor.user().articles;
+  date = new Date();
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate() - 5 );
+
+  articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name}).fetch();
+
+  userArticles = user !== undefined ? 
+    UserArticles.find({ userId: user._id }).fetch() : 
+    UserArticles.find({ userId: Meteor.userId() }).fetch();
+
   userId = user !== undefined ? user._id : Meteor.userId();
 
   _.each(articles, function(article) {
-    if (_.isEmpty(_.where(userArticles, {_id: article._id})) && article.score > 5) {
-      Meteor.users.update({ _id: userId},
-      {
-        $push: {
-          articles: {_id: article._id, seen: false, categoryName: category.name, dismissed: false}
-        }
+    if (_.isEmpty(_.where(userArticles, {articleId: article._id})) && article.score > 5) {
+      UserArticles.insert({
+        userId: userId,
+        article: article,
+        articleId: article._id,
+        seen: false,
+        dismissed: false,
+        createdAt: new Date().getTime()
       });
     }
   });

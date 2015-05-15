@@ -1,5 +1,5 @@
-Meteor.publish('articles', function() {
-  return Articles.find();
+Meteor.publish('userArticles', function() {
+  return UserArticles.find({ userId: this.userId, dismissed: false });
 });
 
 Meteor.publish('categories', function() {

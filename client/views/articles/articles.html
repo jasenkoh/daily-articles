@@ -22,24 +22,30 @@
           </div>
           <div id="collapse-{{_id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="panel-{{_id}}">
             <div class="panel-body">
-              <ul>
+              <div clas="items">
                 {{ #each articles }}
-                  {{ #if $eq ../name category.name}}
-                    <li class='list-group-item'>
-                      <span class="badge">{{ category.name }}: {{ score }}</span>
-                      {{ title }}
-                      <p>
-                        <a href='{{ url }}' target='_blank' class='visit-article'>
-                          Check it out
-                        </a> | 
-                        <a href='#' class='dismiss-article'>
-                          Dismiss
-                        </a>
-                      </p>
-                    </li>
+                  {{ #if $eq ../name article.category.name}}
+                    <div class="post clearfix" style="top: 0px">
+                      {{ #if seen }}
+                      <div class="seen">
+                        <span class="glyphicon glyphicon-eye-open" title="Article Seen" aria-hidden="true"></span>
+                      </div>
+                      {{ else }}
+                      <div class="seen">
+                        <span class="glyphicon glyphicon-eye-close" title="Article Not Seen" aria-hidden="true"></span>
+                      </div>
+                      {{ /if }}
+                      <div class="post-content">
+                        <h3><a href="{{ article.url }}" target='_blank' class='visit-article'>{{ article.title }}</a></h3>
+                        <p>
+                          {{ article.score }} Votes
+                        </p>
+                      </div>
+                      <a href="#" class="dismiss-article btn btn-default">Dismiss</a>
+                    </div>
                   {{ /if }}
                 {{ /each }}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
