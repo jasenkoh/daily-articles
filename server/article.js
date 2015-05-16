@@ -73,6 +73,11 @@ var addUserArticle = function(category, user) {
 
   articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name}).fetch();
 
+  if (articles.length === 0) {
+    getArticleForCategory(category);
+    addUserArticle(category, user);
+  }
+
   userArticles = user !== undefined ? 
     UserArticles.find({ userId: user._id }).fetch() : 
     UserArticles.find({ userId: Meteor.userId() }).fetch();

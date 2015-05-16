@@ -36,16 +36,12 @@ Template.articleList.onRendered(function() {
 
 var getArticles = function() {
   Session.set('loading', true);
-  var start = new Date().getTime();
-
+  
   Meteor.call('feedUserWithArticles', function(error, result) {
     if (error) {
       console.log(err);
       throw new Meteor.Error( 500, 'There was an error processing your request');
     } else {
-      var end = new Date().getTime();
-      var time = end - start;
-      console.log('Get articles execution time: ' + (time / 1000) + ' seconds');
       Session.set('loading', false);
     }
   });
