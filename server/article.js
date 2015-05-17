@@ -1,12 +1,13 @@
 Meteor.methods({
   getFreshArticles: function(category) {
+    var result;
     if (category) {
-      getArticleForCategory(category);
+      result = getArticleForCategory(category);
     } else {
-      getArticlesForCategories()
+      result = getArticlesForCategories()
     }
 
-    return true;
+    return result;
   },
   feedUserWithArticles: function(categoryName, user) {
     if (categoryName) {
@@ -62,6 +63,8 @@ var getArticleForCategory = function(category) {
   result = fetchArticlesSync(category);
 
   saveFreshArticles(result, category);
+
+  return result;
 }
 
 var addUserArticle = function(category, user) {
@@ -72,11 +75,6 @@ var addUserArticle = function(category, user) {
   date.setDate(date.getDate() - 5 );
 
   articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name}).fetch();
-
-  if (articles.length === 0) {
-    getArticleForCategory(category);
-    addUserArticle(category, user);
-  }
 
   userArticles = user !== undefined ? 
     UserArticles.find({ userId: user._id }).fetch() : 
@@ -96,19 +94,6 @@ var addUserArticle = function(category, user) {
       });
     }
   });
-}
-
-var readArticlesFromReddit = function(category, cb) {
-  var articleIds, response, articles;
-  articleIds = [];
-  response = HTTP.get(category.referral_url);
-  
-  articles = _.chain(response.data.data.children)
-    .filter(function(article) { return !article.data.is_self; })
-    .sortBy(function(article) { return article.data.ups * -1; })
-    .value();
-
-  cb && cb(null, articles);
 }
 
 var saveFreshArticles = function(articles, category) {

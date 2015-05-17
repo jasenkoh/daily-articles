@@ -27,20 +27,25 @@ Template.categoryList.events({
   'click .add-category': function(e) {
     Session.set('loading', true);
 
-    var subreddit = $('#category-name').val();
-    if (subreddit.slice(0, 2) === 'r/') {
+    var subreddit = $('#category-name').val().replace(/ /g,'');
+    if (subreddit !== "") {
       categoryAttributes = {
-        name: subreddit.slice(2),
-        referral_url: 'http://www.reddit.com/r/' + subreddit.slice(2) + '.json?sort=hot&limit=50',
+        name: subreddit,
+        referral_url: 'http://www.reddit.com/r/' + subreddit + '.json?sort=hot&limit=50',
         userId: Meteor.userId(),
         active: true
       }
 
-      Meteor.call('addCategory', categoryAttributes, function(err, res) {
-        if (err) {
-          alert('error adding category');
-          console.log(err);
+      Meteor.call('addCategory', categoryAttributes, function(error) {
+        if (error) {
           Session.set('loading', false);
+          if (error.error === 500) {
+            alert('Something went wrong, please try again');
+          } else {
+            alert(error.reason) 
+          }
+
+          console.log(error);
         } else {
           $('#category-name').val('');
           $('.input-group').removeClass('has-error');
