@@ -96,7 +96,7 @@ var addUserArticle = function(category, user) {
   });
 }
 
-var saveFreshArticles = function(articles, category) {
+saveFreshArticles = function(articles, category) {
   _.each(articles, function(article) {
     var existingArticle = Articles.findOne({referral_id: article.data.id});
 

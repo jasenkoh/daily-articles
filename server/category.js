@@ -13,13 +13,17 @@ Meteor.methods({
 
     category = Categories.findOne({name: categoryAttributes.name});
 
+    id = category !== undefined ? category._id : Categories.insert(categoryAttributes);
+
     if (!category) {
-      if (validateSubreddit(categoryAttributes).length === 0) {
+      var articles = validateSubreddit(categoryAttributes);
+
+      if (articles.length === 0) {
         throw new Meteor.Error(400, 'Subreddit not found');
+      } else {
+        saveFreshArticles(articles, Categories.findOne({_id: id}));
       }
     }
-
-    id = category !== undefined ? category._id : Categories.insert(categoryAttributes)
 
     _.extend(categoryAttributes, {
       _id: id
@@ -52,9 +56,6 @@ Meteor.methods({
 });
 
 var validateSubreddit = function(category) {
-  var result;
   validateSubredditSync = Meteor.wrapAsync(readArticlesFromReddit);
-  result = validateSubredditSync(category);
-
-  return result;
-}
+  return validateSubredditSync(category);
+};

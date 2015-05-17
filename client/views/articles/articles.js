@@ -1,6 +1,6 @@
 Template.articleList.helpers({
   articles: function () {
-    return UserArticles.find().fetch();
+    return _.sortBy(UserArticles.find().fetch(), function(userArticle) { return -userArticle.article.score });
   },
   categories: function() {
     return _.filter(Meteor.user().categories, function(category) { return category.active; });
