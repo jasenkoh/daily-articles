@@ -14,8 +14,8 @@ Template.categoryList.events({
       _id: this._id
     }
     
-    Meteor.call('updateUserCategory', categoryAttributes, function (error, result) {
-      if (error) {
+    Meteor.call('updateUserCategory', categoryAttributes, function (err) {
+      if (err) {
         console.log(err);
         throw new Meteor.Error( 500, 'There was an error processing your request');
         Session.set('loading', false);
@@ -36,23 +36,23 @@ Template.categoryList.events({
         active: true
       }
 
-      Meteor.call('addCategory', categoryAttributes, function(error) {
-        if (error) {
+      Meteor.call('addCategory', categoryAttributes, function(err) {
+        if (err) {
           Session.set('loading', false);
-          if (error.error === 500) {
+          if (err.error === 500) {
             alert('Something went wrong, please try again');
           } else {
             $('.input-group').addClass('has-error');
             $('#category-name').val('');
-            alert(error.reason) 
+            alert(err.reason) 
           }
 
-          console.log(error);
+          console.log(err);
         } else {
           $('#category-name').val('');
           $('.input-group').removeClass('has-error');
 
-          Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err, res) {
+          Meteor.call('feedUserWithArticles', categoryAttributes.name, function(err) {
             if (err) {
               console.log(err);
               throw new Meteor.Error( 500, 'There was an error processing your request');

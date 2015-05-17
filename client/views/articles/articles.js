@@ -21,10 +21,14 @@ Template.articleList.events({
   },
   'click .dismiss-all': function(e) {
     e.preventDefault();
-    Meteor.call('dismissAllArticles', this.name, function(err, res) {
+    Session.set('loading', true);
+
+    Meteor.call('dismissAllArticles', this.name, function(err) {
       if (err) {
         console.log(err);
         throw new Meteor.Error( 500, 'There was an error processing your request');
+      } else {
+        Session.set('loading', false);
       }
     });
   }
@@ -37,8 +41,8 @@ Template.articleList.onRendered(function() {
 var getArticles = function() {
   Session.set('loading', true);
   
-  Meteor.call('feedUserWithArticles', function(error, result) {
-    if (error) {
+  Meteor.call('feedUserWithArticles', function(err) {
+    if (err) {
       console.log(err);
       throw new Meteor.Error( 500, 'There was an error processing your request');
     } else {

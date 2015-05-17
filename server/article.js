@@ -37,7 +37,7 @@ Meteor.methods({
   },
   dismissAllArticles: function(category) {
     _.each(UserArticles.find().fetch(), function(userArticle) {
-      if (userArticle.article.categoryName === category) {
+      if (userArticle.article.category.name === category) {
         UserArticles.update({ _id: userArticle._id },  {$set: { dismissed: true}});
       }
     });
