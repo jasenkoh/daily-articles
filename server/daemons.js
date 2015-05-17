@@ -48,4 +48,14 @@ SyncedCron.add({
   }
 });
 
+SyncedCron.add({
+  name: 'Keep site alive',
+  schedule: function(parser) {
+    return parser.text('every 10 mins');
+  },
+  job: function() {
+    HTTP.get('http://daily-articles.meteor.com');
+  }
+})
+
 SyncedCron.start();

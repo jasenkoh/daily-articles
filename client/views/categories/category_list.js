@@ -42,6 +42,8 @@ Template.categoryList.events({
           if (error.error === 500) {
             alert('Something went wrong, please try again');
           } else {
+            $('.input-group').addClass('has-error');
+            $('#category-name').val('');
             alert(error.reason) 
           }
 
