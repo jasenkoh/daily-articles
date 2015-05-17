@@ -26,11 +26,25 @@ Template.articleList.events({
     Meteor.call('dismissAllArticles', this.name, function(err) {
       if (err) {
         console.log(err);
-        throw new Meteor.Error( 500, 'There was an error processing your request');
+        throw new Meteor.Error(500, 'There was an error processing your request');
       } else {
         Session.set('loading', false);
       }
     });
+  },
+  'click .feed-user': function(e) {
+    e.preventDefault();
+    Session.set('loading', true);
+
+    Meteor.call('getFreshArticles',null, Meteor.user(), function(err) {
+      if (err) {
+        Session.set('loading', false);
+        console.log(err);
+        return alert(err.reason);
+      } else {
+        getArticles();
+      }
+    })
   }
 });
 
@@ -41,7 +55,7 @@ Template.articleList.onRendered(function() {
 var getArticles = function() {
   Session.set('loading', true);
   
-  Meteor.call('feedUserWithArticles', function(err) {
+  Meteor.call('feedUserWithArticles',null, Meteor.user(), function(err) {
     if (err) {
       console.log(err);
       throw new Meteor.Error( 500, 'There was an error processing your request');

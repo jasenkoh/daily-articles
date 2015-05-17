@@ -41,7 +41,7 @@ SyncedCron.add({
 SyncedCron.add({
   name: 'Feed users with articles',
   schedule: function(parser) {
-    return parser.text('every 3 hours');
+    return parser.text('every 2 hours');
   },
   job: function() {
     feedUsers();

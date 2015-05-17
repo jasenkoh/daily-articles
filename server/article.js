@@ -1,10 +1,16 @@
 Meteor.methods({
-  getFreshArticles: function(category) {
+  getFreshArticles: function(category, user) {
     var result;
     if (category) {
       result = getArticleForCategory(category);
     } else {
-      result = getArticlesForCategories()
+      if (user) {
+
+      } else {
+        result = getArticlesForCategories(Categories.find().fetch())
+      }
+      categories = _.pluck(user.categories, '_id');
+      result = getArticlesForCategories(Categories.find({ _id: {$in: categories }}).fetch())
     }
 
     return result;
@@ -13,7 +19,7 @@ Meteor.methods({
     if (categoryName) {
       addUserArticle(Categories.findOne({name: categoryName}), user);
     } else {
-      categories = _.filter(Meteor.user().categories, function(category) { return category.active; });
+      categories = _.filter(user.categories, function(category) { return category.active; });
 
       _.each(categories, function(category) {
         addUserArticle(Categories.findOne({name: category.name}), user);
@@ -44,10 +50,8 @@ Meteor.methods({
   }
 });
 
-var getArticlesForCategories = function() {
-  var result, categories;
-
-  categories = Categories.find().fetch();
+var getArticlesForCategories = function(categories) {
+  var result, fetchArticlesSync;
 
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
