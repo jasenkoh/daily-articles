@@ -27,7 +27,7 @@ Template.categoryList.events({
   'click .add-category': function(e) {
     Session.set('loading', true);
 
-    var subreddit = $('#category-name').val().replace(/ /g,'');
+    var subreddit = $('#category-name').val().replace(/ /g,'').toLowerCase();
     if (subreddit !== "") {
       categoryAttributes = {
         name: subreddit,

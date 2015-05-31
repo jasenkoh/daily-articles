@@ -2,7 +2,7 @@ Meteor.methods({
   getFreshArticles: function(category, user) {
     var result;
     if (category) {
-      result = getArticleForCategory(category);
+      result = getArticlesForCategories(category);
     } else {
       if (user) {
 
@@ -42,7 +42,7 @@ Meteor.methods({
     });
   },
   dismissAllArticles: function(category) {
-    _.each(UserArticles.find().fetch(), function(userArticle) {
+    _.each(UserArticles.find({ dismissed: false }).fetch(), function(userArticle) {
       if (userArticle.article.category.name === category) {
         UserArticles.update({ _id: userArticle._id },  {$set: { dismissed: true}});
       }
@@ -52,23 +52,14 @@ Meteor.methods({
 
 var getArticlesForCategories = function(categories) {
   var result, fetchArticlesSync;
+  categories = [].concat(categories)
 
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
   _.each(categories, function(category) {
-    result = fetchArticlesSync(category);
-
+    fetchArticlesSync(category);
     saveFreshArticles(result, category);
   });
-}
-
-var getArticleForCategory = function(category) {
-  fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
-  result = fetchArticlesSync(category);
-
-  saveFreshArticles(result, category);
-
-  return result;
 }
 
 var addUserArticle = function(category, user) {
