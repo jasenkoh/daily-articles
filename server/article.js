@@ -5,12 +5,11 @@ Meteor.methods({
       result = getArticlesForCategories(category);
     } else {
       if (user) {
-
+        categories = _.pluck(user.categories, '_id');
+        result = getArticlesForCategories(Categories.find({ _id: {$in: categories }}).fetch());
       } else {
-        result = getArticlesForCategories(Categories.find().fetch())
+        result = getArticlesForCategories(Categories.find().fetch());
       }
-      categories = _.pluck(user.categories, '_id');
-      result = getArticlesForCategories(Categories.find({ _id: {$in: categories }}).fetch())
     }
 
     return result;
@@ -57,7 +56,7 @@ var getArticlesForCategories = function(categories) {
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
   
   _.each(categories, function(category) {
-    fetchArticlesSync(category);
+    result = fetchArticlesSync(category);
     saveFreshArticles(result, category);
   });
 }
