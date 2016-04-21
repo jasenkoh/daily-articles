@@ -3,11 +3,11 @@
   "servers": [
     {
       "host": "46.101.234.188",
-      "username": "jataja@live.com",
+      "username": "root",
       //"password": "1j453nko",
       // or pem file (ssh based authentication)
       // WARNING: Keys protected by a passphrase are not supported
-      //"pem": "~/.ssh/id_rsa",
+      	"pem": "~/.ssh/id_rsa",
       // Also, for non-standard ssh port use this
       //"sshOptions": { "port" : 49154 },
       // server specific environment variables
@@ -24,7 +24,7 @@
   // Location of app (local directory). This can reference '~' as the users home directory.
   // i.e., "app": "~/Meteor/my-app",
   // This is the same as the line below.
-  "app": "/root/daily-articles",
+  "app": "../../",
 
   // Configure environment
   // ROOT_URL must be set to your correct domain (https or http)
