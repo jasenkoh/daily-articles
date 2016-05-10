@@ -1,9 +1,14 @@
 Template.articleList.helpers({
-  articles: function () {
+  userArticles: function () {
+    var articleIds = _.pluck(UserArticles.find({ userId: Meteor.userId(), dismissed: false }).fetch(), 'articleId');
     return _.sortBy(UserArticles.find().fetch(), function(userArticle) { return -userArticle.article.score });
   },
   categories: function() {
     return _.filter(Meteor.user().categories, function(category) { return category.active; });
+  },
+  articles: function() {
+    var articleIds = _.pluck(UserArticles.find({ userId: Meteor.userId(), dismissed: false }).fetch(), 'articleId');
+    return _.sortBy(Articles.find({_id: {$in: articleIds}}).fetch(), function(article) { return -article.score; } );
   }
 });
 
@@ -54,7 +59,7 @@ Template.articleList.onRendered(function() {
 
 var getArticles = function() {
   Session.set('loading', true);
-  
+
   Meteor.call('feedUserWithArticles',null, Meteor.user(), function(err) {
     if (err) {
       console.log(err);
@@ -67,7 +72,7 @@ var getArticles = function() {
 
 Handlebars.registerHelper('countItems', function(category) {
   var count = UserArticles.find({ 'article.category.name': category }).fetch().length;
-  
+
   var message;
   if (count === 0) {
     message = 'Nothing to read, please update list or come back later.';

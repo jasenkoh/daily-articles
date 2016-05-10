@@ -5,7 +5,7 @@
     {{ else }}
       <button type="button" class="btn btn-success update-list">Get from System</button>
       <button type="button" class="btn btn-primary feed-user">Feed me from Reddit!</button>
-      
+
       <div class="panel-group list-group" id="accordion" role="tablist" aria-multiselectable="true">
         {{ #each categories }}
           <div class="panel panel-default">
@@ -25,26 +25,30 @@
               <div class="panel-body">
                 <div clas="items">
                   {{ #each articles }}
-                    {{ #if $eq ../name article.category.name}}
-                      <div class="post clearfix" style="top: 0px">
-                        {{ #if seen }}
-                        <div class="seen">
-                          <span class="glyphicon glyphicon-eye-open" title="Article Seen" aria-hidden="true"></span>
+                    {{ #if $eq ../name category.name}}
+                      {{#each userArticles}}
+                        {{#if $eq ../_id articleId}}
+                        <div class="post clearfix" style="top: 0px">
+                          {{ #if seen }}
+                          <div class="seen">
+                            <span class="glyphicon glyphicon-eye-open" title="Article Seen" aria-hidden="true"></span>
+                          </div>
+                          {{ else }}
+                          <div class="seen">
+                            <span class="glyphicon glyphicon-eye-close" title="Article Not Seen" aria-hidden="true"></span>
+                          </div>
+                          {{ /if }}
+                          <div class="post-content">
+                            <h3><a href="{{ ../url }}" target='_blank' class='visit-article'>{{ ../title }}</a></h3>
+                            <p>
+                              {{ ../score }} Votes
+                            </p>
+                          </div>
+                          <a href="#" class="dismiss-article btn btn-default">Dismiss</a>
                         </div>
-                        {{ else }}
-                        <div class="seen">
-                          <span class="glyphicon glyphicon-eye-close" title="Article Not Seen" aria-hidden="true"></span>
-                        </div>
-                        {{ /if }}
-                        <div class="post-content">
-                          <h3><a href="{{ article.url }}" target='_blank' class='visit-article'>{{ article.title }}</a></h3>
-                          <p>
-                            {{ article.score }} Votes
-                          </p>
-                        </div>
-                        <a href="#" class="dismiss-article btn btn-default">Dismiss</a>
-                      </div>
-                    {{ /if }}
+                        {{/if}}
+                        {{/each}}
+                      {{ /if }}
                   {{ /each }}
                 </div>
               </div>

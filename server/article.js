@@ -54,7 +54,7 @@ var getArticlesForCategories = function(categories) {
   categories = [].concat(categories)
 
   fetchArticlesSync = Meteor.wrapAsync(readArticlesFromReddit);
-  
+
   _.each(categories, function(category) {
     result = fetchArticlesSync(category);
     saveFreshArticles(result, category);
@@ -70,8 +70,8 @@ var addUserArticle = function(category, user) {
 
   articles = Articles.find({ createdAt: { $gte: date }, 'category.name': category.name}).fetch();
 
-  userArticles = user !== undefined ? 
-    UserArticles.find({ userId: user._id }).fetch() : 
+  userArticles = user !== undefined ?
+    UserArticles.find({ userId: user._id }).fetch() :
     UserArticles.find({ userId: Meteor.userId() }).fetch();
 
   userId = user !== undefined ? user._id : Meteor.userId();
@@ -112,7 +112,7 @@ saveFreshArticles = function(articles, category) {
         console.log('There was an error processing request: ' + err);
       }
     } else {
-      Articles.update({_id: existingArticle._id}, {$set: {score: article.data.ups}});
+      Articles.update({_id: existingArticle._id}, { $set: { score: article.data.ups } });
     }
   });
 }
